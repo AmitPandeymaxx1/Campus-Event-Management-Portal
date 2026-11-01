@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Events | CampusConnect (interactive demo)</title>
+<style>
+  /* ---- stand-in for your existing stylesheet (only so this demo looks like your page) ---- */
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:#f6f7fb;color:#1b1740}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:14px 40px;background:#fff;border-bottom:1px solid #eceaf6}
+  nav b{font-size:1.15rem;color:#4c2fd1}
+  nav a{margin-left:20px;color:#4a476b;text-decoration:none;font-weight:600}
+  main{max-width:1320px;margin:0 auto;padding:24px 28px 80px}
+  .hero{border-radius:36px;padding:56px 70px 64px;color:#fff;background:linear-gradient(120deg,#1e1450,#4b32b0 55%,#7a5af0)}
+  .hero small{display:block;letter-spacing:.2em;font-weight:800;font-size:.78rem;color:#cfc4ff;margin-bottom:18px}
+  .hero h1{margin:0;font-size:clamp(2.4rem,6vw,4.4rem);line-height:1.05;letter-spacing:-.03em}
+  .hero h1 span{color:#c4b5fd}
+  .hero p{max-width:640px;font-size:1.15rem;margin:22px 0 0;color:#ece8ff}
+  .hero .btns{margin-top:28px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{padding:16px 24px;border-radius:14px;font-weight:700;font-size:1.05rem;text-decoration:none;display:inline-block}
+  .btn.w{background:#fff;color:#1e1450}
+  .btn.g{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.3)}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;margin:56px 0 22px}
+  .head small{display:block;letter-spacing:.18em;font-weight:800;color:#8b5cf6;font-size:.8rem;margin-bottom:6px}
+  .head h2{margin:0;font-size:2.1rem;letter-spacing:-.02em}
+  .count{background:#ede9fe;color:#5b3ee0;font-weight:700;padding:10px 18px;border-radius:999px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:26px}
+  .card{background:#fff;border-radius:22px;overflow:hidden;border:1px solid #eceaf6;box-shadow:0 2px 6px rgba(30,20,80,.05)}
+  .banner{height:176px;position:relative;padding:22px}
+  .banner .emoji{font-size:48px}
+  .banner .date{position:absolute;top:22px;right:22px;background:#fff;padding:7px 12px;border-radius:12px;font-weight:700;font-size:.9rem}
+  .card .body{padding:24px 26px 26px}
+  .card h3{margin:0 0 8px;font-size:1.45rem;letter-spacing:-.01em}
+  .card p{margin:0;color:#6b6890;line-height:1.5}
+  .b1{background:linear-gradient(135deg,#ddd6fe,#c4b5fd)}
+  .b2{background:linear-gradient(135deg,#ffe4d1,#fdba9b)}
+  .b3{background:linear-gradient(135deg,#bff3e4,#8fe3cf)}
+  .b4{background:linear-gradient(135deg,#cfe8ff,#93c5fd)}
+  .b5{background:linear-gradient(135deg,#fde68a,#fca5a5)}
+  @media(max-width:700px){.hero{padding:36px 26px}nav{padding:12px 18px}main{padding:16px 14px 80px}}
+</style>
+<style>
+/*! CampusConnect Interactive Pack v1.0 — styles
+   Tweak the look from here: change --cc-accent / --cc-accent-2 below. */
+
+:root {
+  --cc-accent: #6d4aff;
+  --cc-accent-2: #8b5cf6;
+  --cc-surface: #ffffff;
+  --cc-surface-2: #f3f1ff;
+  --cc-text: #1b1740;
+  --cc-muted: #6b6890;
+  --cc-border: rgba(109, 74, 255, .18);
+  --cc-shadow: 0 14px 40px -16px rgba(60, 30, 160, .35);
+}
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --cc-accent: #a78bfa;
+  --cc-accent-2: #8b5cf6;
+  --cc-surface: #1b1932;
+  --cc-surface-2: #26233f;
+  --cc-text: #ece9ff;
+  --cc-muted: #a9a5cc;
+  --cc-border: rgba(255, 255, 255, .12);
+  --cc-shadow: 0 14px 40px -16px rgba(0, 0, 0, .7);
+}
+
+.cc-ui[hidden], .cc-pill[hidden], .cc-m-link[hidden], .cc-modal[hidden] { display: none !important; }
+.cc-hidden { display: none !important; }
+html.cc-lock { overflow: hidden; }
+html { scroll-behavior: smooth; }
+
+/* ------------------------------------------------------------- toolbar */
+.cc-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  margin: 0 0 22px; padding: 10px;
+  border: 1px solid var(--cc-border); border-radius: 18px;
+  background: var(--cc-surface);
+  background: color-mix(in srgb, var(--cc-surface) 84%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: 0 6px 24px -14px rgba(60, 30, 160, .3);
+  position: sticky; top: 10px; z-index: 30; scroll-margin-top: 16px;
+  color: var(--cc-text);
+}
+.cc-toolbar.cc-pulse { animation: cc-pulse 1s ease-out; }
+@keyframes cc-pulse { 0% { box-shadow: 0 0 0 0 rgba(109, 74, 255, .55); } 100% { box-shadow: 0 0 0 18px rgba(109, 74, 255, 0); } }
+
+.cc-search {
+  flex: 1 1 240px; display: flex; align-items: center; gap: 8px;
+  height: 44px; padding: 0 12px 0 14px; border-radius: 14px;
+  background: var(--cc-surface-2); border: 1px solid transparent; color: var(--cc-muted);
+  transition: border-color .2s, box-shadow .2s;
+}
+.cc-search:focus-within { border-color: var(--cc-accent); box-shadow: 0 0 0 4px rgba(109, 74, 255, .16); }
+.cc-search input {
+  flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent;
+  font: inherit; color: var(--cc-text);
+}
+.cc-search kbd {
+  font: 600 .72rem/1 ui-monospace, Consolas, monospace; color: var(--cc-muted);
+  border: 1px solid var(--cc-border); border-radius: 6px; padding: 3px 7px; background: var(--cc-surface);
+}
+
+.cc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.cc-chip {
+  appearance: none; cursor: pointer; font: inherit; font-weight: 600; font-size: .86rem;
+  padding: 8px 14px; border-radius: 999px; color: var(--cc-text);
+  border: 1px solid var(--cc-border); background: var(--cc-surface);
+  transition: transform .18s, border-color .18s, box-shadow .18s;
+}
+.cc-chip:hover { transform: translateY(-1px); border-color: var(--cc-accent); }
+.cc-chip small { margin-left: 6px; font-weight: 700; opacity: .65; }
+.cc-chip[aria-pressed="true"] {
+  color: #fff; border-color: transparent;
+  background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2));
+  box-shadow: 0 8px 18px -8px rgba(109, 74, 255, .75);
+}
+
+.cc-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.cc-sort {
+  height: 44px; padding: 0 12px; border-radius: 12px; font: inherit; font-weight: 600; cursor: pointer;
+  color: var(--cc-text); background: var(--cc-surface); border: 1px solid var(--cc-border);
+}
+.cc-sort:focus-visible, .cc-chip:focus-visible, .cc-btn:focus-visible, .cc-fab:focus-visible,
+.cc-save:focus-visible, .cc-next:focus-visible, .cc-modal__x:focus-visible { outline: 3px solid var(--cc-accent); outline-offset: 2px; }
+
+.cc-btn {
+  appearance: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 16px; border-radius: 12px; cursor: pointer;
+  font: inherit; font-weight: 600; font-size: .92rem; color: var(--cc-text);
+  background: var(--cc-surface); border: 1px solid var(--cc-border);
+  transition: transform .18s, box-shadow .18s, background .18s;
+}
+.cc-btn:hover:not([disabled]) { transform: translateY(-1px); box-shadow: 0 8px 18px -10px rgba(60, 30, 160, .5); }
+.cc-btn[disabled] { opacity: .55; cursor: not-allowed; }
+.cc-btn[aria-pressed="true"] { background: #ffe4ea; color: #be123c; border-color: #fda4af; }
+html[data-theme="dark"] .cc-btn[aria-pressed="true"] { background: #4a1d2b; color: #fda4af; border-color: #7f1d3a; }
+.cc-primary {
+  color: #fff; border-color: transparent;
+  background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-2));
+}
+.cc-primary.cc-done { background: linear-gradient(135deg, #10b981, #059669); }
+.cc-badge {
+  min-width: 22px; padding: 2px 7px; border-radius: 999px; font-size: .75rem; font-weight: 700; text-align: center;
+  background: var(--cc-surface-2); color: var(--cc-accent);
+}
+
+/* --------------------------------------------------------------- cards */
+.cc-card { cursor: pointer; transition: transform .18s ease, box-shadow .25s ease; }
+.cc-card:hover { box-shadow: var(--cc-shadow); }
+.cc-card:focus-visible { outline: 3px solid var(--cc-accent); outline-offset: 3px; }
+.cc-card mark, .cc-search + mark {
+  background: #fde68a; color: inherit; border-radius: 4px; padding: 0 2px;
+}
+.cc-save {
+  position: absolute; top: var(--cc-save-top, 64px); right: var(--cc-save-right, 16px); z-index: 3;
+  width: 38px; height: 38px; display: grid; place-items: center; padding: 0;
+  font-size: 19px; line-height: 1; cursor: pointer; color: #6b6890;
+  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .88);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: 0 6px 16px -8px rgba(0, 0, 0, .35);
+  transition: transform .18s, color .18s;
+}
+.cc-save:hover { transform: scale(1.12); }
+.cc-save[aria-pressed="true"] { color: #e11d48; }
+.cc-save.cc-beat { animation: cc-beat .5s ease; }
+@keyframes cc-beat { 0% { transform: scale(1); } 30% { transform: scale(1.5); } 60% { transform: scale(.9); } 100% { transform: scale(1); } }
+
+.cc-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0 4px; font-size: .8rem; }
+.cc-pill {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+  font-size: .78rem; font-weight: 700; line-height: 1.3;
+  background: var(--cc-surface-2); color: var(--cc-accent);
+}
+.cc-pill--hot { background: #fff1e6; color: #c2410c; }
+.cc-pill--done { background: #eceaf3; color: #6b6890; }
+.cc-pill--ok { background: #dcfce7; color: #166534; }
+.cc-pill--cat { background: transparent; color: var(--cc-muted); border: 1px solid var(--cc-border); }
+html[data-theme="dark"] .cc-pill--hot { background: #4a2511; color: #fdba74; }
+html[data-theme="dark"] .cc-pill--done { background: #2b2842; color: #a9a5cc; }
+html[data-theme="dark"] .cc-pill--ok { background: #12351f; color: #86efac; }
+.cc-more { margin-left: auto; font-weight: 700; color: var(--cc-accent); opacity: .85; transition: transform .2s; }
+.cc-card:hover .cc-more { transform: translateX(4px); opacity: 1; }
+
+.cc-reveal { opacity: 0; }
+.cc-reveal.cc-in { animation: cc-rise .65s cubic-bezier(.2, .8, .2, 1) var(--cc-d, 0ms) both; }
+@keyframes cc-rise { from { opacity: 0; transform: translateY(26px) scale(.98); } to { opacity: 1; transform: none; } }
+.cc-pop { animation: cc-pop .38s cubic-bezier(.2, .9, .3, 1.1) both; }
+@keyframes cc-pop { from { opacity: 0; transform: scale(.94) translateY(10px); } to { opacity: 1; transform: none; } }
+
+.cc-empty { text-align: center; padding: 48px 16px; color: var(--cc-muted); }
+.cc-empty__emoji { font-size: 54px; animation: cc-float 3s ease-in-out infinite; }
+.cc-empty h3 { margin: 10px 0 4px; color: var(--cc-text); font-size: 1.25rem; }
+.cc-empty p { margin: 0 0 16px; }
+@keyframes cc-float { 50% { transform: translateY(-8px); } }
+
+/* ---------------------------------------------------------------- hero */
+.cc-glow {
+  position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(420px circle at var(--mx, 70%) var(--my, 30%), rgba(255, 255, 255, .16), transparent 60%);
+}
+.cc-glow.cc-on { opacity: 1; }
+.cc-next {
+  position: relative; z-index: 2; display: inline-flex; align-items: center; gap: 8px;
+  margin: 14px 0 0; padding: 8px 14px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-size: .9rem; color: #fff;
+  border: 1px solid rgba(255, 255, 255, .3); background: rgba(255, 255, 255, .12);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: transform .18s, background .2s;
+}
+.cc-next:hover { transform: translateY(-1px); background: rgba(255, 255, 255, .22); }
+.cc-next b { font-weight: 700; }
+.cc-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: cc-ping 1.6s infinite; }
+@keyframes cc-ping { 0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, .7); } 70% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); } 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); } }
+
+/* --------------------------------------------------------------- modal */
+.cc-modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.cc-modal__backdrop { position: absolute; inset: 0; background: rgba(14, 10, 40, .62); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); animation: cc-fade .25s both; }
+.cc-modal__panel {
+  position: relative; width: min(560px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+  border-radius: 26px; background: var(--cc-surface); color: var(--cc-text);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .65);
+  animation: cc-pop-in .38s cubic-bezier(.2, .9, .3, 1.2) both;
+}
+@keyframes cc-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cc-pop-in { from { opacity: 0; transform: translateY(24px) scale(.95); } to { opacity: 1; transform: none; } }
+.cc-modal__hero { position: relative; height: 150px; display: flex; align-items: center; justify-content: center; font-size: 68px; }
+.cc-m-icon { animation: cc-float 3.2s ease-in-out infinite; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .18)); }
+.cc-modal__hero .cc-pill { position: absolute; left: 18px; bottom: 14px; background: rgba(255, 255, 255, .85); }
+.cc-modal__x {
+  position: absolute; top: 14px; right: 14px; z-index: 2; width: 38px; height: 38px; display: grid; place-items: center;
+  border: 0; border-radius: 50%; cursor: pointer; font-size: 15px; color: #1b1740;
+  background: rgba(255, 255, 255, .85); transition: transform .18s;
+}
+.cc-modal__x:hover { transform: rotate(90deg); }
+.cc-modal__body { padding: 22px 24px 26px; }
+.cc-modal__body h3 { margin: 0 0 6px; font-size: 1.5rem; line-height: 1.2; color: var(--cc-text); }
+.cc-m-date { margin-bottom: 12px; font-size: .9rem; font-weight: 600; color: var(--cc-muted); }
+.cc-m-desc { margin: 0 0 18px; line-height: 1.6; color: var(--cc-muted); }
+.cc-count { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.cc-count > div { padding: 12px 6px; border-radius: 16px; text-align: center; background: var(--cc-surface-2); }
+.cc-count b { display: block; font-size: 1.7rem; font-variant-numeric: tabular-nums; color: var(--cc-accent); }
+.cc-count small { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--cc-muted); }
+.cc-countwrap[data-state] .cc-count { opacity: .45; }
+.cc-count__msg { margin: 10px 0 0; text-align: center; font-weight: 700; color: var(--cc-accent); }
+.cc-count__msg:empty { display: none; }
+.cc-countwrap { margin-bottom: 20px; }
+.cc-m-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.cc-m-link { display: inline-block; margin-top: 16px; font-weight: 700; color: var(--cc-accent); text-decoration: none; }
+.cc-m-link:hover { text-decoration: underline; }
+
+/* ----------------------------------------------- toasts, fabs, progress */
+.cc-toasts { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 1200; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.cc-toast {
+  max-width: min(92vw, 420px); padding: 11px 18px; border-radius: 14px; font-size: .92rem; font-weight: 600;
+  color: #fff; background: #1f1b3a; box-shadow: 0 16px 34px -12px rgba(0, 0, 0, .55);
+  animation: cc-toast-in .35s cubic-bezier(.2, .9, .3, 1.2) both;
+}
+.cc-toast.cc-out { animation: cc-toast-out .3s ease both; }
+@keyframes cc-toast-in { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes cc-toast-out { to { opacity: 0; transform: translateY(8px) scale(.96); } }
+
+.cc-fabs { position: fixed; right: 18px; bottom: 18px; z-index: 900; display: flex; flex-direction: column; gap: 10px; }
+.cc-fab {
+  width: 46px; height: 46px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  font-size: 19px; color: var(--cc-text); border-radius: 50%; border: 1px solid var(--cc-border);
+  background: var(--cc-surface); box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .45);
+  transition: transform .2s, opacity .25s;
+}
+.cc-fab:hover { transform: translateY(-2px) scale(1.06); }
+.cc-fab--top { opacity: 0; pointer-events: none; transform: translateY(10px); font-weight: 800; }
+.cc-fab--top.cc-show { opacity: 1; pointer-events: auto; transform: none; }
+.cc-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 1100; background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+.cc-confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1300; }
+
+/* ----------------------------------------------------------- dark mode
+   Generic overrides for pages we can't see. Adjust selectors if your
+   markup differs (e.g. add your own card / navbar class). */
+html[data-theme="dark"] body { background: #0e0d1c !important; color: #ece9ff; }
+html[data-theme="dark"] :is(h2, h3):not(.cc-card *):not(.cc-ui *) { color: #f4f2ff; }
+html[data-theme="dark"] .cc-card { background: #1a1830 !important; border-color: rgba(255, 255, 255, .08) !important; color: #ece9ff; }
+html[data-theme="dark"] .cc-card :is(h1, h2, h3, h4) { color: #fff; }
+html[data-theme="dark"] .cc-card p { color: #b9b5da; }
+html[data-theme="dark"] :is(nav, footer) { background: #141228 !important; color: #ece9ff; border-color: rgba(255, 255, 255, .08) !important; }
+html[data-theme="dark"] :is(nav, footer) a { color: inherit; }
+html[data-theme="dark"] :is(nav, footer) :is(b, strong, .brand, .logo, .navbar-brand) { color: #c4b5fd; }
+html[data-theme="dark"] .cc-date { color: #1b1740; }   /* date badge is a light pill */
+html[data-theme="dark"] .cc-card mark { background: #854d0e; color: #fef3c7; }
+
+/* ---------------------------------------------------------- responsive */
+@media (max-width: 640px) {
+  .cc-toolbar { position: static; }
+  .cc-right { width: 100%; margin-left: 0; }
+  .cc-right > * { flex: 1; }
+  .cc-search kbd { display: none; }
+  .cc-modal__body { padding: 18px 18px 22px; }
+  .cc-count b { font-size: 1.3rem; }
+  .cc-m-actions .cc-btn { flex: 1 1 calc(50% - 8px); padding: 0 10px; }
+  .cc-toasts { bottom: 78px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .cc-reveal { opacity: 1; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}
+
+</style>
+</head>
+<body>
+  <nav><b>🎓 CampusConnect</b><div><a href="#">Events</a><a href="#">Login</a></div></nav>
+  <main>
+    <section class="hero">
+      <small>YOUR CAMPUS. YOUR MOMENT.</small>
+      <h1>Discover campus events.<br><span>Make memories.</span></h1>
+      <p>Find events, register in seconds, and earn participation certificates.</p>
+      <div class="btns"><a class="btn w" href="#events">Explore events ↓</a><a class="btn g" href="#">Create student account</a></div>
+    </section>
+
+    <div class="head" id="events">
+      <div><small>WHAT'S HAPPENING</small><h2>Upcoming events</h2></div>
+      <span class="count">6 events</span>
+    </div>
+
+    <section class="grid">
+      <article class="card">
+        <div class="banner b1"><span class="emoji">💻</span><span class="date">2026-11-20</span></div>
+        <div class="body"><h3>Tech Fest 2026</h3><p>A day of coding, innovation and technology challenges.</p></div>
+      </article>
+      <article class="card">
+        <div class="banner b2"><span class="emoji">🎭</span><span class="date">2026-12-05</span></div>
+        <div class="body"><h3>Cultural Night</h3><p>Music, dance, performances and student creativity.</p></div>
+      </article>
+      <article class="card">
+        <div class="banner b3"><span class="emoji">🚀</span><span class="date">2026-12-12</span></div>
+        <div class="body"><h3>Web Development Workshop</h3><p>Hands-on workshop on modern web development.</p></div>
+      </article>
+      <!-- three extra demo events so search / filters / sort have something to chew on -->
+      <article class="card">
+        <div class="banner b1"><span class="emoji">⌨️</span><span class="date">2026-11-08</span></div>
+        <div class="body"><h3>CodeSprint Hackathon</h3><p>Twenty-four hours of building, debugging and pizza.</p></div>
+      </article>
+      <article class="card">
+        <div class="banner b4"><span class="emoji">🏏</span><span class="date">2026-11-14</span></div>
+        <div class="body"><h3>Inter-College Cricket Tournament</h3><p>Cheer for your department on the main ground.</p></div>
+      </article>
+      <article class="card">
+        <div class="banner b5"><span class="emoji">🎉</span><span class="date">2026-10-20</span></div>
+        <div class="body"><h3>Freshers Meet</h3><p>Welcome party with music and games for new students.</p></div>
+      </article>
+    </section>
+  </main>
+<script>
+/*!
+ * CampusConnect Interactive Pack v1.0
+ * ---------------------------------------------------------------------------
+ * Drop-in, zero-dependency enhancement for the CampusConnect events page.
+ * It auto-detects event cards (any block that holds a YYYY-MM-DD date) and adds:
+ *
+ *   - live search (with highlight), category chips, sorting
+ *   - saved events (heart), "saved only" filter  (stored in localStorage)
+ *   - live countdown on every card + "Next up" ticker in the hero
+ *   - quick-view modal with ticking countdown (days / hours / min / sec)
+ *   - Add to calendar (.ics), copy link (deep link via #event-id)
+ *   - Register button (AJAX if you give an endpoint, local demo otherwise)
+ *   - dark mode, toasts, confetti, scroll reveal, card tilt, hero glow
+ *   - keyboard: "/" focus search, "Esc" close modal
+ *
+ * Optional config (define BEFORE loading this file):
+ *   window.CC_CONFIG = {
+ *     cardSelector: '.event-card',        // skip auto-detect, use your own selector
+ *     registerEndpoint: '/api/register',  // POST {event_id,title,date} -> {ok:true}
+ *     loginUrl: '/login',                 // redirect here when endpoint returns 401/403
+ *     startHour: 9                        // countdown target hour (24h clock)
+ *   };
+ * Optional attributes on a card: data-event-id, data-category, data-date, data-title
+ */
+(() => {
+  'use strict';
+  if (window.__ccInteractive) return;
+  window.__ccInteractive = true;
+
+  const CFG = Object.assign(
+    { cardSelector: null, registerEndpoint: null, loginUrl: null, startHour: 9, storagePrefix: 'cc:' },
+    window.CC_CONFIG || {}
+  );
+
+  /* ------------------------------------------------------------------ utils */
+  const DATE_FIND = /(\d{4})-(\d{2})-(\d{2})/;
+  const REDUCED = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const FINE = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches);
+  let EMOJI_RE;
+  try { EMOJI_RE = new RegExp('\\p{Extended_Pictographic}', 'u'); }
+  catch (_) { EMOJI_RE = /[\u2600-\u27BF]|[\uD83C-\uDBFF][\uDC00-\uDFFF]/; }
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const make = (tag, cls, html) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (html != null) n.innerHTML = html;
+    return n;
+  };
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const pad = n => (n < 10 ? '0' : '') + n;
+
+  const store = {
+    get(k, d) {
+      try { const v = localStorage.getItem(CFG.storagePrefix + k); return v == null ? d : JSON.parse(v); }
+      catch (_) { return d; }
+    },
+    set(k, v) { try { localStorage.setItem(CFG.storagePrefix + k, JSON.stringify(v)); } catch (_) { /* private mode */ } }
+  };
+
+  // apply saved theme as early as possible (less flash)
+  const root = document.documentElement;
+  const storedTheme = store.get('theme', null);
+  if (storedTheme) root.setAttribute('data-theme', storedTheme);
+
+  /* ------------------------------------------------------------------ state */
+  const saved = new Set(store.get('saved', []));
+  const registered = new Set(store.get('registered', []));
+  const state = { q: '', cat: 'All', sort: 'default', savedOnly: false };
+  let events = [], grid = null, toolbar = null, emptyEl = null, modal = null;
+  let searchInput = null, savedBadge = null, countEl = null, nextBtn = null, nextEv = null;
+  let openEv = null, lastFocus = null, canReorder = true, themeBtn = null;
+
+  const CAT_ICON = { All: '✨', Tech: '💻', Cultural: '🎭', Workshop: '🛠️', Sports: '🏅', Other: '📌' };
+  const GRAD = {
+    Tech: 'linear-gradient(135deg,#ddd6fe,#c4b5fd)',
+    Cultural: 'linear-gradient(135deg,#ffe4d1,#fdba9b)',
+    Workshop: 'linear-gradient(135deg,#bff3e4,#8fe3cf)',
+    Sports: 'linear-gradient(135deg,#cfe8ff,#93c5fd)'
+  };
+  const GRAD_DEFAULT = 'linear-gradient(135deg,#fde68a,#fca5a5)';
+  const CAT_RULES = [
+    ['Sports', /sport|cricket|football|kabaddi|volleyball|basketball|marathon|tournament|athlet/i],
+    ['Cultural', /cultur|music|dance|drama|theat|fashion|talent|concert|singing/i],
+    ['Workshop', /workshop|seminar|webinar|training|bootcamp|hands-on|masterclass/i],
+    ['Tech', /tech|code|coding|hack|software|\bai\b|robot|data|web|dev|programming|innovation/i]
+  ];
+  const guessCat = text => { for (const [c, re] of CAT_RULES) if (re.test(text)) return c; return 'Other'; };
+
+  /* ------------------------------------------------------------ date helpers */
+  const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const target = ev => { const [y, m, d] = ev.date.split('-').map(Number); return new Date(y, m - 1, d, CFG.startHour, 0, 0); };
+  const dayDiff = ev => Math.round((startOfDay(target(ev)) - startOfDay(new Date())) / 864e5);
+
+  function chipLabel(ev) {
+    const d = dayDiff(ev);
+    if (d < 0) return { text: 'Ended', cls: 'cc-pill--done', ico: '⏹️' };
+    if (d === 0) return { text: 'Today!', cls: 'cc-pill--hot', ico: '🔥' };
+    if (d === 1) return { text: 'Tomorrow', cls: 'cc-pill--hot', ico: '⚡' };
+    if (d <= 7) return { text: 'in ' + d + ' days', cls: 'cc-pill--hot', ico: '⏳' };
+    if (d < 60) return { text: 'in ' + d + ' days', cls: '', ico: '⏳' };
+    return { text: 'in ' + Math.round(d / 30) + ' months', cls: '', ico: '🗓️' };
+  }
+
+  const prettyDate = ev => target(ev).toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  /* ------------------------------------------------------------- detection */
+  const isDateLeaf = n => !n.children.length && n.textContent.trim().length <= 24 && DATE_FIND.test(n.textContent) && !n.closest('.cc-ui');
+
+  function findCards() {
+    let nodes;
+    if (CFG.cardSelector) {
+      nodes = $$(CFG.cardSelector);
+    } else {
+      const leaves = $$('body *').filter(isDateLeaf);
+      nodes = leaves.map(leaf => {
+        let node = leaf;
+        for (let i = 0; i < 6 && node.parentElement; i++) {
+          const p = node.parentElement;
+          if (/^(BODY|MAIN|SECTION|UL|OL|HTML)$/.test(p.tagName)) break;
+          if (leaves.filter(l => p.contains(l)).length > 1) break;
+          node = p;
+        }
+        return node;
+      });
+    }
+    return nodes.filter((n, i) => nodes.indexOf(n) === i);
+  }
+
+  function parse(card, i) {
+    const dateLeaf = $$('*', card).filter(isDateLeaf)[0];
+    if (dateLeaf) dateLeaf.classList.add('cc-date');   // lets dark mode keep the date badge readable
+    const dateText = card.getAttribute('data-date') || (dateLeaf ? dateLeaf.textContent.match(DATE_FIND)[0] : '');
+    const titleEl = $('h1,h2,h3,h4,h5', card);
+    const descEl = $('p', card);
+    const title = (card.getAttribute('data-title') || (titleEl ? titleEl.textContent : '') || 'Event ' + (i + 1)).trim();
+    const desc = descEl ? descEl.textContent.trim() : '';
+    const emojiEl = $$('*', card).filter(n => !n.children.length && n.textContent.trim().length <= 8 && EMOJI_RE.test(n.textContent))[0];
+    const link = $('a[href]', card);
+    return {
+      el: card, titleEl, descEl, title, desc, date: dateText, idx: i,
+      icon: emojiEl ? emojiEl.textContent.trim() : '🎟️',
+      cat: card.getAttribute('data-category') || guessCat(title + ' ' + desc),
+      id: card.getAttribute('data-event-id') || slug(title) || 'event-' + i,
+      href: link ? link.getAttribute('href') : null,
+      hlOK: !!titleEl && !titleEl.children.length
+    };
+  }
+
+  /* ---------------------------------------------------------------- toasts */
+  let toastBox = null;
+  function toast(msg, ms) {
+    if (!toastBox) {
+      toastBox = make('div', 'cc-toasts cc-ui');
+      toastBox.setAttribute('role', 'status');
+      toastBox.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toastBox);
+    }
+    const t = make('div', 'cc-toast', esc(msg));
+    toastBox.appendChild(t);
+    setTimeout(() => { t.classList.add('cc-out'); setTimeout(() => t.remove(), 300); }, ms || 2600);
+  }
+
+  /* -------------------------------------------------------------- confetti */
+  function confetti(x, y) {
+    if (REDUCED) return;
+    const cv = make('canvas', 'cc-confetti cc-ui');
+    cv.width = window.innerWidth; cv.height = window.innerHeight;
+    document.body.appendChild(cv);
+    const ctx = cv.getContext && cv.getContext('2d');
+    if (!ctx) { cv.remove(); return; }
+    const cols = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
+    const ps = [];
+    for (let i = 0; i < 150; i++) {
+      const a = Math.random() * Math.PI * 2, s = 4 + Math.random() * 9;
+      ps.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 6, w: 6 + Math.random() * 6, h: 4 + Math.random() * 5,
+        r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4, c: cols[i % cols.length] });
+    }
+    const t0 = performance.now();
+    (function frame(t) {
+      const age = t - t0;
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      ps.forEach(p => {
+        p.vy += 0.32; p.vx *= 0.992; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, 1 - age / 2600);
+        ctx.translate(p.x, p.y); ctx.rotate(p.r);
+        ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      });
+      if (age < 2600) requestAnimationFrame(frame); else cv.remove();
+    })(t0);
+  }
+
+  /* ---------------------------------------------------------- calendar / share */
+  const icsEscape = s => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+  const ymd = d => d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate());
+
+  function downloadIcs(ev) {
+    const [y, m, d] = ev.date.split('-').map(Number);
+    const now = new Date();
+    const stamp = now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' +
+      pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z';
+    const lines = [
+      'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//CampusConnect//Events//EN', 'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT', 'UID:' + ev.id + '@campusconnect', 'DTSTAMP:' + stamp,
+      'DTSTART;VALUE=DATE:' + ymd(new Date(y, m - 1, d)),
+      'DTEND;VALUE=DATE:' + ymd(new Date(y, m - 1, d + 1)),
+      'SUMMARY:' + icsEscape(ev.title), 'DESCRIPTION:' + icsEscape(ev.desc), 'CATEGORIES:' + icsEscape(ev.cat),
+      'END:VEVENT', 'END:VCALENDAR'
+    ];
+    try {
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = make('a'); a.href = url; a.download = ev.id + '.ics';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+      toast('📅 Calendar file downloaded');
+    } catch (_) { toast('⚠️ Could not create calendar file'); }
+  }
+
+  function share(ev) {
+    const url = location.origin + location.pathname + '#' + encodeURIComponent(ev.id);
+    const done = () => toast('🔗 Link copied');
+    function fallback() {
+      const t = make('textarea'); t.value = url; t.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); done(); } catch (_) { toast(url, 5000); }
+      t.remove();
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, fallback);
+    else fallback();
+  }
+
+  /* -------------------------------------------------------- save / register */
+  function refreshEv(ev) {
+    const isSaved = saved.has(ev.id), isReg = registered.has(ev.id);
+    const sb = $('.cc-save', ev.el);
+    if (sb) { sb.setAttribute('aria-pressed', String(isSaved)); sb.firstChild.textContent = isSaved ? '♥' : '♡'; }
+    if (ev.regEl) ev.regEl.hidden = !isReg;
+    if (savedBadge) savedBadge.textContent = saved.size;
+    if (openEv === ev && modal) {
+      const rb = $('[data-act="register"]', modal), vb = $('[data-act="save"]', modal);
+      if (rb) {
+        const closed = dayDiff(ev) < 0;
+        rb.innerHTML = isReg ? '✓ Registered' : closed ? 'Registration closed' : 'Register now 🎟️';
+        rb.classList.toggle('cc-done', isReg);
+        rb.disabled = closed && !isReg;
+      }
+      if (vb) vb.innerHTML = isSaved ? '♥ Saved' : '♡ Save';
+    }
+  }
+
+  function toggleSave(ev) {
+    if (saved.has(ev.id)) { saved.delete(ev.id); toast('Removed from saved'); }
+    else { saved.add(ev.id); toast('♥ Saved “' + ev.title + '”'); }
+    store.set('saved', Array.from(saved));
+    const sb = $('.cc-save', ev.el);
+    if (sb && !REDUCED) { sb.classList.remove('cc-beat'); void sb.offsetWidth; sb.classList.add('cc-beat'); }
+    refreshEv(ev);
+    if (state.savedOnly) apply();
+  }
+
+  const STOP = {};
+  function register(ev, btn) {
+    if (registered.has(ev.id)) return toast('✅ You are already registered for ' + ev.title);
+    if (dayDiff(ev) < 0) return toast('⏹️ Registration is closed for this event');
+    const success = () => {
+      registered.add(ev.id); store.set('registered', Array.from(registered));
+      refreshEv(ev);
+      toast('🎉 Registered for ' + ev.title + '!');
+      const r = (btn || ev.el).getBoundingClientRect();
+      confetti(r.left + r.width / 2, r.top + r.height / 2);
+    };
+    if (!CFG.registerEndpoint) return success();
+
+    if (btn) { btn.disabled = true; btn.innerHTML = 'Registering…'; }
+    fetch(CFG.registerEndpoint, {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'fetch' },
+      body: JSON.stringify({ event_id: ev.id, title: ev.title, date: ev.date })
+    })
+      .then(r => {
+        if (r.status === 401 || r.status === 403) {
+          toast('🔐 Please log in to register');
+          if (CFG.loginUrl) setTimeout(() => { location.href = CFG.loginUrl; }, 1200);
+          throw STOP;
+        }
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json().catch(() => ({ ok: true }));
+      })
+      .then(d => { if (d && d.ok === false) throw new Error(d.error || 'failed'); success(); })
+      .catch(e => { if (e !== STOP) toast('⚠️ Could not register — please try again'); })
+      .then(() => { if (btn) btn.disabled = false; refreshEv(ev); });
+  }
+
+  /* ----------------------------------------------------------------- modal */
+  function buildModal() {
+    modal = make('div', 'cc-modal cc-ui');
+    modal.hidden = true;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'cc-m-title');
+    modal.innerHTML =
+      '<div class="cc-modal__backdrop" data-close></div>' +
+      '<div class="cc-modal__panel">' +
+        '<button type="button" class="cc-modal__x" data-close aria-label="Close">✕</button>' +
+        '<div class="cc-modal__hero"><span class="cc-m-icon" aria-hidden="true"></span><span class="cc-pill cc-m-cd"></span></div>' +
+        '<div class="cc-modal__body">' +
+          '<h3 id="cc-m-title"></h3>' +
+          '<div class="cc-m-date"></div>' +
+          '<p class="cc-m-desc"></p>' +
+          '<div class="cc-countwrap">' +
+            '<div class="cc-count">' +
+              '<div><b data-u="d">00</b><small>days</small></div><div><b data-u="h">00</b><small>hours</small></div>' +
+              '<div><b data-u="m">00</b><small>mins</small></div><div><b data-u="s">00</b><small>secs</small></div>' +
+            '</div><div class="cc-count__msg"></div>' +
+          '</div>' +
+          '<div class="cc-m-actions">' +
+            '<button type="button" class="cc-btn cc-primary" data-act="register">Register now 🎟️</button>' +
+            '<button type="button" class="cc-btn" data-act="save">♡ Save</button>' +
+            '<button type="button" class="cc-btn" data-act="ics">📅 Add to calendar</button>' +
+            '<button type="button" class="cc-btn" data-act="share">🔗 Copy link</button>' +
+          '</div>' +
+          '<a class="cc-m-link" href="#" hidden>Open full page →</a>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', e => {
+      if (e.target.closest('[data-close]')) return closeModal();
+      const b = e.target.closest('[data-act]');
+      if (!b || !openEv) return;
+      const a = b.getAttribute('data-act');
+      if (a === 'register') register(openEv, b);
+      else if (a === 'save') toggleSave(openEv);
+      else if (a === 'ics') downloadIcs(openEv);
+      else if (a === 'share') share(openEv);
+    });
+  }
+
+  function openModal(ev) {
+    openEv = ev;
+    lastFocus = document.activeElement;
+    $('#cc-m-title', modal).textContent = ev.title;
+    $('.cc-m-date', modal).textContent = '📅 ' + prettyDate(ev) + ' · ' + ev.cat;
+    $('.cc-m-desc', modal).textContent = ev.desc || 'More details coming soon.';
+    $('.cc-m-icon', modal).textContent = ev.icon;
+    $('.cc-modal__hero', modal).style.background = GRAD[ev.cat] || GRAD_DEFAULT;
+    const cl = chipLabel(ev), pill = $('.cc-m-cd', modal);
+    pill.className = 'cc-pill cc-m-cd ' + cl.cls;
+    pill.textContent = cl.ico + ' ' + cl.text;
+    const link = $('.cc-m-link', modal);
+    if (ev.href && ev.href !== '#') { link.href = ev.href; link.hidden = false; } else { link.hidden = true; }
+    refreshEv(ev);
+    tickModal();
+    modal.hidden = false;
+    root.classList.add('cc-lock');
+    $('.cc-modal__x', modal).focus();
+    try { history.replaceState(null, '', '#' + encodeURIComponent(ev.id)); } catch (_) { /* file:// */ }
+  }
+
+  function closeModal() {
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    root.classList.remove('cc-lock');
+    openEv = null;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (_) { /* file:// */ }
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  function tickModal() {
+    if (!openEv || !modal || modal.hidden && !openEv) return;
+    const wrap = $('.cc-countwrap', modal), msg = $('.cc-count__msg', modal);
+    const ms = +target(openEv) - Date.now();
+    if (ms <= 0) {
+      const live = dayDiff(openEv) === 0;
+      wrap.setAttribute('data-state', live ? 'live' : 'ended');
+      msg.textContent = live ? '🔴 Happening today — see you there!' : '⏹️ This event has ended';
+      ['d', 'h', 'm', 's'].forEach(u => { $('[data-u="' + u + '"]', modal).textContent = '00'; });
+      return;
+    }
+    wrap.removeAttribute('data-state');
+    msg.textContent = '';
+    const s = Math.floor(ms / 1000);
+    const parts = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 };
+    Object.keys(parts).forEach(u => { $('[data-u="' + u + '"]', modal).textContent = pad(parts[u]); });
+  }
+
+  /* -------------------------------------------------------- card enhancement */
+  function updateChip(ev) {
+    const cl = chipLabel(ev);
+    ev.cdEl.className = 'cc-pill cc-cd ' + cl.cls;
+    ev.cdEl.textContent = cl.ico + ' ' + cl.text;
+  }
+
+  function enhance(ev) {
+    const c = ev.el;
+    c.classList.add('cc-card');
+    if (getComputedStyle(c).position === 'static') c.style.position = 'relative';
+    c.setAttribute('tabindex', '0');
+    c.setAttribute('aria-haspopup', 'dialog');
+
+    const sb = make('button', 'cc-save cc-ui', '<span aria-hidden="true">♡</span>');
+    sb.type = 'button';
+    sb.setAttribute('aria-label', 'Save ' + ev.title);
+    sb.setAttribute('aria-pressed', 'false');
+    sb.addEventListener('click', e => { e.stopPropagation(); toggleSave(ev); });
+    c.appendChild(sb);
+
+    const meta = make('div', 'cc-meta cc-ui',
+      '<span class="cc-pill cc-cd"></span>' +
+      '<span class="cc-pill cc-pill--cat">' + esc(CAT_ICON[ev.cat] || '📌') + ' ' + esc(ev.cat) + '</span>' +
+      '<span class="cc-pill cc-pill--ok cc-reg" hidden>✓ Registered</span>' +
+      '<span class="cc-more">Quick view →</span>');
+    const anchor = ev.descEl || ev.titleEl;
+    if (anchor) anchor.insertAdjacentElement('afterend', meta); else c.appendChild(meta);
+    ev.cdEl = $('.cc-cd', meta);
+    ev.regEl = $('.cc-reg', meta);
+    updateChip(ev);
+
+    c.addEventListener('click', e => {
+      if (e.target.closest('a,button,input,select,textarea,label')) return;
+      openModal(ev);
+    });
+    c.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target === c) { e.preventDefault(); openModal(ev); }
+    });
+
+    if (FINE && !REDUCED) {
+      c.addEventListener('mousemove', e => {
+        const r = c.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        c.style.transform = 'perspective(900px) rotateX(' + (-y * 5).toFixed(2) + 'deg) rotateY(' + (x * 6).toFixed(2) + 'deg) translateY(-4px)';
+      });
+      c.addEventListener('mouseleave', () => { c.style.transform = ''; });
+    }
+    refreshEv(ev);
+  }
+
+  /* --------------------------------------------------------- filter / sort */
+  const hl = (text, q) => {
+    const i = text.toLowerCase().indexOf(q);
+    if (i < 0) return esc(text);
+    return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+  };
+
+  function sorter(a, b) {
+    if (state.sort === 'name') return a.title.localeCompare(b.title);
+    if (state.sort === 'default') return a.idx - b.idx;
+    const ta = +target(a), tb = +target(b), now = Date.now();
+    if (state.sort === 'date-desc') return tb - ta;
+    const pa = ta < now, pb = tb < now;           // upcoming first, ended at the end
+    if (pa !== pb) return pa ? 1 : -1;
+    return ta - tb;
+  }
+
+  function apply(first) {
+    const q = state.q.trim().toLowerCase();
+    if (canReorder) events.slice().sort(sorter).forEach(e => grid.appendChild(e.el));
+
+    let shown = 0;
+    events.forEach(e => {
+      const ok = (state.cat === 'All' || e.cat === state.cat) &&
+        (!state.savedOnly || saved.has(e.id)) &&
+        (!q || (e.title + ' ' + e.desc + ' ' + e.cat + ' ' + e.date).toLowerCase().indexOf(q) > -1);
+      const wasHidden = e.el.classList.contains('cc-hidden');
+      e.el.classList.toggle('cc-hidden', !ok);
+      if (e.hlOK) e.titleEl.innerHTML = ok && q ? hl(e.title, q) : esc(e.title);
+      if (ok) {
+        if (!first && !REDUCED && (wasHidden || state.q !== e._lastQ)) {
+          e.el.classList.remove('cc-pop'); void e.el.offsetWidth;
+          e.el.style.animationDelay = Math.min(shown, 8) * 35 + 'ms';
+          e.el.classList.add('cc-pop');
+        }
+        shown++;
+      }
+      e._lastQ = state.q;
+    });
+
+    if (countEl) countEl.textContent = shown + (shown === 1 ? ' event' : ' events');
+    const empty = shown === 0;
+    emptyEl.hidden = !empty;
+    if (empty) {
+      const none = state.savedOnly && !saved.size;
+      $('h3', emptyEl).textContent = none ? 'Nothing saved yet' : 'No events found';
+      $('p', emptyEl).textContent = none ? 'Tap the ♡ on any event to keep it here.' : 'Try a different word or clear the filters.';
+    }
+    $$('.cc-chip', toolbar).forEach(b => b.setAttribute('aria-pressed', String(b.getAttribute('data-cat') === state.cat)));
+    $('.cc-saved-toggle', toolbar).setAttribute('aria-pressed', String(state.savedOnly));
+  }
+
+  function resetFilters() {
+    state.q = ''; state.cat = 'All'; state.savedOnly = false;
+    searchInput.value = '';
+    apply();
+  }
+
+  /* --------------------------------------------------------------- toolbar */
+  function buildToolbar() {
+    toolbar = make('div', 'cc-toolbar cc-ui');
+    const cats = ['All'].concat(Array.from(new Set(events.map(e => e.cat))));
+    toolbar.innerHTML =
+      '<label class="cc-search"><span aria-hidden="true">🔍</span>' +
+        '<input type="search" placeholder="Search events…" aria-label="Search events" autocomplete="off"><kbd>/</kbd></label>' +
+      (cats.length > 2 ? '<div class="cc-chips" role="group" aria-label="Filter by category">' +
+        cats.map(c => '<button type="button" class="cc-chip" data-cat="' + esc(c) + '" aria-pressed="' + (c === 'All') + '">' +
+          (CAT_ICON[c] || '📌') + ' ' + esc(c) + '<small>' + (c === 'All' ? events.length : events.filter(e => e.cat === c).length) + '</small></button>').join('') +
+        '</div>' : '') +
+      '<div class="cc-right">' +
+        '<button type="button" class="cc-btn cc-saved-toggle" aria-pressed="false">♥ Saved <span class="cc-badge">0</span></button>' +
+        (canReorder ? '<select class="cc-sort" aria-label="Sort events">' +
+          '<option value="default">Featured</option><option value="date">Soonest first</option>' +
+          '<option value="date-desc">Latest first</option><option value="name">A → Z</option></select>' : '') +
+      '</div>';
+    grid.parentNode.insertBefore(toolbar, grid);
+
+    emptyEl = make('div', 'cc-empty cc-ui',
+      '<div class="cc-empty__emoji">🔭</div><h3>No events found</h3><p></p>' +
+      '<button type="button" class="cc-btn" data-reset>Reset filters</button>');
+    emptyEl.hidden = true;
+    grid.parentNode.insertBefore(emptyEl, grid.nextSibling);
+
+    searchInput = $('input', toolbar);
+    savedBadge = $('.cc-badge', toolbar);
+    searchInput.addEventListener('input', () => { state.q = searchInput.value; apply(); });
+    toolbar.addEventListener('click', e => {
+      const chip = e.target.closest('.cc-chip');
+      if (chip) { state.cat = chip.getAttribute('data-cat'); apply(); }
+      if (e.target.closest('.cc-saved-toggle')) { state.savedOnly = !state.savedOnly; apply(); }
+    });
+    const sortSel = $('.cc-sort', toolbar);
+    if (sortSel) sortSel.addEventListener('change', () => { state.sort = sortSel.value; apply(); });
+    emptyEl.addEventListener('click', e => { if (e.target.closest('[data-reset]')) resetFilters(); });
+  }
+
+  /* ------------------------------------------------- hero, fabs, progress */
+  function updateNext() {
+    if (!nextBtn) return;
+    const now = Date.now();
+    const up = events.filter(e => +target(e) > now).sort((a, b) => +target(a) - +target(b))[0];
+    if (!up) { nextBtn.hidden = true; return; }
+    nextEv = up; nextBtn.hidden = false;
+    const s = Math.floor((+target(up) - now) / 1000);
+    nextBtn.innerHTML = '<span class="cc-dot"></span>Next up: <b>' + esc(up.title) + '</b> · ' +
+      Math.floor(s / 86400) + 'd ' + pad(Math.floor(s % 86400 / 3600)) + 'h ' + pad(Math.floor(s % 3600 / 60)) + 'm ' + pad(s % 60) + 's';
+  }
+
+  function buildHero() {
+    const h1 = $('h1');
+    if (!h1) return;
+    let hero = h1.closest('section, header, .hero') || h1.parentElement;
+    if (!hero || hero.contains(grid)) hero = h1.parentElement;
+    if (!hero || hero.contains(grid) || hero === document.body) return;
+
+    if (getComputedStyle(hero).position === 'static') hero.style.position = 'relative';
+    const glow = make('div', 'cc-glow cc-ui');
+    hero.appendChild(glow);
+    if (FINE && !REDUCED) {
+      hero.addEventListener('mouseenter', () => glow.classList.add('cc-on'));
+      hero.addEventListener('mouseleave', () => glow.classList.remove('cc-on'));
+      hero.addEventListener('mousemove', e => {
+        const r = hero.getBoundingClientRect();
+        glow.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        glow.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    }
+    nextBtn = make('button', 'cc-next cc-ui');
+    nextBtn.type = 'button';
+    nextBtn.addEventListener('click', () => { if (nextEv) openModal(nextEv); });
+    (($('p', hero) || h1).insertAdjacentElement('afterend', nextBtn));
+    updateNext();
+  }
+
+  function buildChrome() {
+    const prog = make('div', 'cc-progress cc-ui');
+    document.body.appendChild(prog);
+    const fabs = make('div', 'cc-fabs cc-ui');
+    themeBtn = make('button', 'cc-fab', '🌙');
+    themeBtn.type = 'button';
+    themeBtn.setAttribute('aria-label', 'Toggle dark mode');
+    const top = make('button', 'cc-fab cc-fab--top', '↑');
+    top.type = 'button';
+    top.setAttribute('aria-label', 'Back to top');
+    fabs.appendChild(top); fabs.appendChild(themeBtn);
+    document.body.appendChild(fabs);
+
+    const syncTheme = () => { themeBtn.textContent = root.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; };
+    syncTheme();
+    themeBtn.addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next); store.set('theme', next); syncTheme();
+      toast(next === 'dark' ? '🌙 Dark mode on' : '☀️ Light mode on', 1500);
+    });
+    top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' }));
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return; ticking = true;
+      requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        prog.style.width = (max > 0 ? Math.min(100, window.scrollY / max * 100) : 0) + '%';
+        top.classList.toggle('cc-show', window.scrollY > 500);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  function wireExploreButton() {
+    $$('a,button').forEach(b => {
+      if (b.closest('.cc-ui') || !/explore\s+events/i.test(b.textContent)) return;
+      b.addEventListener('click', e => {
+        e.preventDefault();
+        toolbar.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+        toolbar.classList.remove('cc-pulse'); void toolbar.offsetWidth; toolbar.classList.add('cc-pulse');
+      });
+    });
+  }
+
+  function reveal() {
+    if (REDUCED || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => {
+        if (!en.isIntersecting) return;
+        const c = en.target; io.unobserve(c);
+        c.classList.add('cc-in');
+        c.addEventListener('animationend', function done() {
+          c.classList.remove('cc-reveal', 'cc-in'); c.removeEventListener('animationend', done);
+        });
+      });
+    }, { threshold: 0.08 });
+    events.forEach((e, i) => { e.el.classList.add('cc-reveal'); e.el.style.setProperty('--cc-d', (i % 6) * 70 + 'ms'); io.observe(e.el); });
+  }
+
+  function bindKeys() {
+    document.addEventListener('keydown', e => {
+      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || '')) || e.target.isContentEditable;
+      if (modal && !modal.hidden) {
+        if (e.key === 'Escape') return closeModal();
+        if (e.key === 'Tab') {
+          const f = $$('button:not([disabled]),a[href]', modal).filter(n => !n.hidden);
+          if (!f.length) return;
+          const first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+        return;
+      }
+      if (e.key === '/' && !typing && !e.ctrlKey && !e.metaKey) { e.preventDefault(); searchInput.focus(); }
+      else if (e.key === 'Escape' && document.activeElement === searchInput) { searchInput.value = ''; state.q = ''; apply(); searchInput.blur(); }
+    });
+  }
+
+  /* ------------------------------------------------------------------ init */
+  function init() {
+    const cards = findCards();
+    events = cards.map(parse).filter(e => e.date);
+    if (!events.length) {
+      if (window.console) console.info('[CampusConnect Interactive] No event cards found. Set window.CC_CONFIG = { cardSelector: ".your-card-class" } before loading interactive.js');
+      return;
+    }
+    grid = events[0].el.parentElement;
+    canReorder = events.every(e => e.el.parentElement === grid);
+    countEl = $$('body *').filter(n => !n.children.length && /^\s*\d+\s+events?\s*$/i.test(n.textContent) && !n.closest('.cc-ui'))[0] || null;
+
+    buildToolbar();
+    events.forEach(enhance);
+    buildModal();
+    buildChrome();
+    buildHero();
+    wireExploreButton();
+    bindKeys();
+    apply(true);
+    reveal();
+
+    setInterval(() => events.forEach(updateChip), 30000);
+    setInterval(() => { tickModal(); updateNext(); }, 1000);
+
+    const hash = decodeURIComponent((location.hash || '').slice(1));
+    const deep = hash && events.filter(e => e.id === hash)[0];
+    if (deep) openModal(deep);
+
+    window.CampusConnectUI = { toast, confetti, events, open: id => { const e = events.filter(x => x.id === id)[0]; if (e) openModal(e); } };
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+</script>
+</body>
+</html>
